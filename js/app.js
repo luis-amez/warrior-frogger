@@ -66,8 +66,8 @@ Player.prototype.update = function() {
 
     }
   }.bind(this));
-  // Warrior has 0 lives, hide player
-  if (this.lives <= 0) {
+  // Warrior dies or wins, hide player
+  if (this.lives <= 0 || this.score >= 3000) {
     this.x = - globalVariables.X_SIDE;
   }
 };
@@ -92,12 +92,21 @@ Player.prototype.render = function() {
     ctx.font = "28pt sans-serif";
     ctx.strokeText("Pres any key to start a new game.", globalVariables.MAX_COLS * globalVariables.X_SIDE / 2, globalVariables.MAX_ROWS * globalVariables.Y_SIDE / 1.75 + 60);
     ctx.fillText("Pres any key to start a new game.", globalVariables.MAX_COLS * globalVariables.X_SIDE / 2, globalVariables.MAX_ROWS * globalVariables.Y_SIDE / 1.75 + 60);
+  } else if (this.score >= 3000) {
+    ctx.font = "63pt sans-serif";
+    ctx.lineWidth = 4;
+    ctx.textAlign = "center";
+    ctx.strokeText("Wow! You win!", globalVariables.MAX_COLS * globalVariables.X_SIDE / 2, globalVariables.MAX_ROWS * globalVariables.Y_SIDE / 1.75);
+    ctx.fillText("Wow! You win!", globalVariables.MAX_COLS * globalVariables.X_SIDE / 2, globalVariables.MAX_ROWS * globalVariables.Y_SIDE / 1.75);
+    ctx.font = "28pt sans-serif";
+    ctx.strokeText("Pres any key to start a new game.", globalVariables.MAX_COLS * globalVariables.X_SIDE / 2, globalVariables.MAX_ROWS * globalVariables.Y_SIDE / 1.75 + 60);
+    ctx.fillText("Pres any key to start a new game.", globalVariables.MAX_COLS * globalVariables.X_SIDE / 2, globalVariables.MAX_ROWS * globalVariables.Y_SIDE / 1.75 + 60);
   }
 };
 
 // Move the warrior across the screen
 Player.prototype.handleInput = function(key) {
-  if (this.lives > 0) {
+  if (this.lives > 0 && this.score < 3000) {
     switch (key) {
       case 'left':
         if (this.x > 0) {
@@ -120,7 +129,7 @@ Player.prototype.handleInput = function(key) {
         }
         break;
     }
-  // Warrior has 0 lives, start new game
+  // Warrior dies or wins, start new game
   } else {
     this.newGame();
   }
