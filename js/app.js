@@ -1,18 +1,19 @@
 // Global variables
-var constants = {
+var globalVariables = {
   MAX_ROWS: 7,
   MAX_COLS: 7,
   X_SIDE: 101,
   Y_SIDE: 83,
   Y_START_PLAYER: 72,
   Y_START_ENEMY: 62,
-  Y_START_ITEM: 52
+  Y_START_ITEM: 52,
+  difficultLevel: 1
 };
 
 // Ghosts that haunt our warrior,
 // Parameter: yRow, the row where they appear
 var Enemy = function(yRow) {
-  this.x = - 3 * constants.X_SIDE;
+  this.x = - 3 * globalVariables.X_SIDE;
   this.y = yRow;
   this.speed = this.getRandomSpeed();
   this.sprite = 'images/ghost-regular.png';
@@ -20,14 +21,14 @@ var Enemy = function(yRow) {
 
 // Set a different speed (between 150 and 600) for each enemy's ride
 Enemy.prototype.getRandomSpeed = function() {
-  return Math.random() * 450 + 150;
+  return (Math.random() * 450 + 150) * globalVariables.difficultLevel;
 };
 
 // Update the ghosts' position
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-  if (this.x >= (constants.MAX_COLS + 2) * constants.X_SIDE) {
-    this.x = - 3 * constants.X_SIDE;
+  if (this.x >= (globalVariables.MAX_COLS + 2) * globalVariables.X_SIDE) {
+    this.x = - 3 * globalVariables.X_SIDE;
     this.speed = this.getRandomSpeed();
   } else {
     this.x += this.speed * dt;
@@ -48,25 +49,26 @@ var Player = function() {
 // Update the warrior's position
 Player.prototype.update = function() {
   // Warrior reachs goal
-  if (this.y < -constants.Y_SIDE) {
-    this.x = Math.floor(constants.MAX_COLS / 2) * constants.X_SIDE;
-    this.y = constants.Y_START_PLAYER + (constants.MAX_ROWS - 2) * constants.Y_SIDE;
+  if (this.y < -globalVariables.Y_SIDE) {
+    this.x = Math.floor(globalVariables.MAX_COLS / 2) * globalVariables.X_SIDE;
+    this.y = globalVariables.Y_START_PLAYER + (globalVariables.MAX_ROWS - 2) * globalVariables.Y_SIDE;
     this.score += 100;
+    globalVariables.difficultLevel += 0.1;
     potionPoints.appear();
     potionHealth.appear();
   }
   // Warrior hits a ghost
   allEnemies.forEach(function(enemy) {
-    if (this.y - constants.Y_START_PLAYER === enemy.y - constants.Y_START_ENEMY && (this.x > enemy.x - constants.X_SIDE / 1.75 && this.x < enemy.x + constants.X_SIDE / 1.75)) {
-      this.x = Math.floor(constants.MAX_COLS / 2) * constants.X_SIDE;
-      this.y = constants.Y_START_PLAYER + (constants.MAX_ROWS - 2) * constants.Y_SIDE;
+    if (this.y - globalVariables.Y_START_PLAYER === enemy.y - globalVariables.Y_START_ENEMY && (this.x > enemy.x - globalVariables.X_SIDE / 1.75 && this.x < enemy.x + globalVariables.X_SIDE / 1.75)) {
+      this.x = Math.floor(globalVariables.MAX_COLS / 2) * globalVariables.X_SIDE;
+      this.y = globalVariables.Y_START_PLAYER + (globalVariables.MAX_ROWS - 2) * globalVariables.Y_SIDE;
       this.lives --;
 
     }
   }.bind(this));
   // Warrior has 0 lives, hide player
   if (this.lives <= 0) {
-    this.x = - constants.X_SIDE;
+    this.x = - globalVariables.X_SIDE;
   }
 };
 
@@ -85,11 +87,11 @@ Player.prototype.render = function() {
     ctx.font = "63pt sans-serif";
     ctx.lineWidth = 4;
     ctx.textAlign = "center";
-    ctx.strokeText("Game Over!", constants.MAX_COLS * constants.X_SIDE / 2, constants.MAX_ROWS * constants.Y_SIDE / 1.75);
-    ctx.fillText("Game Over!", constants.MAX_COLS * constants.X_SIDE / 2, constants.MAX_ROWS * constants.Y_SIDE / 1.75);
+    ctx.strokeText("Game Over!", globalVariables.MAX_COLS * globalVariables.X_SIDE / 2, globalVariables.MAX_ROWS * globalVariables.Y_SIDE / 1.75);
+    ctx.fillText("Game Over!", globalVariables.MAX_COLS * globalVariables.X_SIDE / 2, globalVariables.MAX_ROWS * globalVariables.Y_SIDE / 1.75);
     ctx.font = "28pt sans-serif";
-    ctx.strokeText("Pres any key to start a new game.", constants.MAX_COLS * constants.X_SIDE / 2, constants.MAX_ROWS * constants.Y_SIDE / 1.75 + 60);
-    ctx.fillText("Pres any key to start a new game.", constants.MAX_COLS * constants.X_SIDE / 2, constants.MAX_ROWS * constants.Y_SIDE / 1.75 + 60);
+    ctx.strokeText("Pres any key to start a new game.", globalVariables.MAX_COLS * globalVariables.X_SIDE / 2, globalVariables.MAX_ROWS * globalVariables.Y_SIDE / 1.75 + 60);
+    ctx.fillText("Pres any key to start a new game.", globalVariables.MAX_COLS * globalVariables.X_SIDE / 2, globalVariables.MAX_ROWS * globalVariables.Y_SIDE / 1.75 + 60);
   }
 };
 
@@ -99,22 +101,22 @@ Player.prototype.handleInput = function(key) {
     switch (key) {
       case 'left':
         if (this.x > 0) {
-          this.x -= constants.X_SIDE;
+          this.x -= globalVariables.X_SIDE;
         }
         break;
       case 'up':
-        if (this.y > -constants.Y_SIDE) {
-          this.y -= constants.Y_SIDE;
+        if (this.y > -globalVariables.Y_SIDE) {
+          this.y -= globalVariables.Y_SIDE;
         }
         break;
       case 'right':
-        if (this.x < (constants.MAX_COLS - 1) * constants.X_SIDE) {
-          this.x += constants.X_SIDE;
+        if (this.x < (globalVariables.MAX_COLS - 1) * globalVariables.X_SIDE) {
+          this.x += globalVariables.X_SIDE;
         }
         break;
       case 'down':
-        if (this.y < constants.Y_START_PLAYER + (constants.MAX_ROWS - 2) * constants.Y_SIDE) {
-          this.y += constants.Y_SIDE;
+        if (this.y < globalVariables.Y_START_PLAYER + (globalVariables.MAX_ROWS - 2) * globalVariables.Y_SIDE) {
+          this.y += globalVariables.Y_SIDE;
         }
         break;
     }
@@ -126,15 +128,17 @@ Player.prototype.handleInput = function(key) {
 
 // Start new game
 Player.prototype.newGame = function() {
-  this.x = Math.floor(constants.MAX_COLS / 2) * constants.X_SIDE;
-  this.y = constants.Y_START_PLAYER + (constants.MAX_ROWS - 2) * constants.Y_SIDE;
+  this.x = Math.floor(globalVariables.MAX_COLS / 2) * globalVariables.X_SIDE;
+  this.y = globalVariables.Y_START_PLAYER + (globalVariables.MAX_ROWS - 2) * globalVariables.Y_SIDE;
   this.lives = 3;
   this.score = 0;
+  globalVariables.difficultLevel = 1;
 };
 
 // Items our warrior can take
 var Item = function() {
-
+  this.prob = 1;
+  this.sprite = "";
 };
 
 // Draw the item on the screen
@@ -145,8 +149,8 @@ Item.prototype.render = function() {
 // Show an item according to its probability
 Item.prototype.appear = function() {
   if (this.prob >= Math.random()) {
-    this.x = this.getRandomLocation(constants.MAX_COLS, constants.X_SIDE, 0);
-    this.y = this.getRandomLocation(constants.MAX_ROWS - 2, constants.Y_SIDE, constants.Y_START_ITEM);
+    this.x = this.getRandomLocation(globalVariables.MAX_COLS, globalVariables.X_SIDE, 0);
+    this.y = this.getRandomLocation(globalVariables.MAX_ROWS - 2, globalVariables.Y_SIDE, globalVariables.Y_START_ITEM);
   }
 };
 
@@ -157,6 +161,7 @@ Item.prototype.getRandomLocation = function(max, side, start) {
 
 // Potion that gives points to the Warrior
 var PotionPoints = function() {
+  Item.call(this);
   this.prob = 1/3;
   this.sprite = 'images/potion-points.png';
 };
@@ -168,14 +173,15 @@ PotionPoints.prototype.constructor = PotionPoints;
 // Update the potionPoints's position
 PotionPoints.prototype.update = function() {
   // Warrior drinks the potionPoints
-  if (player.y - constants.Y_START_PLAYER === this.y - constants.Y_START_ITEM && player.x === this.x) {
-    this.y = - 3 * constants.Y_SIDE;
+  if (player.y - globalVariables.Y_START_PLAYER === this.y - globalVariables.Y_START_ITEM && player.x === this.x) {
+    this.y = - 3 * globalVariables.Y_SIDE;
     player.score += 500;
   }
 };
 
 // Potion that gives one more life to the Warrior
 var PotionHealth = function() {
+  Item.call(this);
   this.prob = 1/10;
   this.sprite = 'images/potion-health.png';
 };
@@ -187,23 +193,23 @@ PotionHealth.prototype.constructor = PotionHealth;
 // Update potionHealth's position
 PotionHealth.prototype.update = function() {
   // Player drinks the potionHealth
-  if (player.y - constants.Y_START_PLAYER === this.y - constants.Y_START_ITEM && player.x === this.x) {
-    this.y = - 3 * constants.Y_SIDE;
+  if (player.y - globalVariables.Y_START_PLAYER === this.y - globalVariables.Y_START_ITEM && player.x === this.x) {
+    this.y = - 3 * globalVariables.Y_SIDE;
     player.lives ++;
   }
 };
 
 // Declaration of all the ghosts. They are stored into an array
-var enemyA1 = new Enemy(constants.Y_START_ENEMY + constants.Y_SIDE * 4);
-var enemyA2 = new Enemy(constants.Y_START_ENEMY + constants.Y_SIDE * 4);
-var enemyB1 = new Enemy(constants.Y_START_ENEMY + constants.Y_SIDE * 3);
-var enemyB2 = new Enemy(constants.Y_START_ENEMY + constants.Y_SIDE * 3);
-var enemyC1 = new Enemy(constants.Y_START_ENEMY + constants.Y_SIDE * 2);
-var enemyC2 = new Enemy(constants.Y_START_ENEMY + constants.Y_SIDE * 2);
-var enemyD1 = new Enemy(constants.Y_START_ENEMY + constants.Y_SIDE * 1);
-var enemyD2 = new Enemy(constants.Y_START_ENEMY + constants.Y_SIDE * 1);
-var enemyE1 = new Enemy(constants.Y_START_ENEMY);
-var enemyE2 = new Enemy(constants.Y_START_ENEMY);
+var enemyA1 = new Enemy(globalVariables.Y_START_ENEMY + globalVariables.Y_SIDE * 4);
+var enemyA2 = new Enemy(globalVariables.Y_START_ENEMY + globalVariables.Y_SIDE * 4);
+var enemyB1 = new Enemy(globalVariables.Y_START_ENEMY + globalVariables.Y_SIDE * 3);
+var enemyB2 = new Enemy(globalVariables.Y_START_ENEMY + globalVariables.Y_SIDE * 3);
+var enemyC1 = new Enemy(globalVariables.Y_START_ENEMY + globalVariables.Y_SIDE * 2);
+var enemyC2 = new Enemy(globalVariables.Y_START_ENEMY + globalVariables.Y_SIDE * 2);
+var enemyD1 = new Enemy(globalVariables.Y_START_ENEMY + globalVariables.Y_SIDE * 1);
+var enemyD2 = new Enemy(globalVariables.Y_START_ENEMY + globalVariables.Y_SIDE * 1);
+var enemyE1 = new Enemy(globalVariables.Y_START_ENEMY);
+var enemyE2 = new Enemy(globalVariables.Y_START_ENEMY);
 var allEnemies = [enemyA1, enemyA2, enemyB1, enemyB2, enemyC1, enemyC2, enemyD1, enemyD2, enemyE1, enemyE2];
 // Declaration of our warrior
 var player = new Player();
